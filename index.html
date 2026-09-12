@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#07111f" />
+  <title>ErgoGameshow | แบบประเมินอาการปวดและความรู้</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #07111f;
+      --panel: #0d1d31;
+      --text: #f6f8fb;
+      --muted: #a9b7c8;
+      --accent: #ffd84d;
+      --accent2: #45d7ff;
+      --good: #62e6a7;
+      --bad: #ff7b86;
+      --line: rgba(255,255,255,.12);
+      --shadow: 0 16px 42px rgba(0,0,0,.28);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Chakra Petch", Tahoma, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 20% 0%, rgba(69,215,255,.10), transparent 32%),
+        radial-gradient(circle at 90% 20%, rgba(255,216,77,.09), transparent 28%),
+        linear-gradient(180deg, #06101d 0%, #081728 48%, #06101d 100%);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .15;
+      background-image:
+        linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: linear-gradient(to bottom, black, transparent 80%);
+    }
+
+    .wrap {
+      width: min(1080px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 24px 0 64px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 34px;
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: linear-gradient(135deg, rgba(13,29,49,.94), rgba(5,17,31,.94));
+      box-shadow: var(--shadow);
+    }
+
+    .hero::after {
+      content: "ERGOGAMESHOW";
+      position: absolute;
+      right: -28px;
+      bottom: -14px;
+      font-size: clamp(42px, 8vw, 110px);
+      font-weight: 700;
+      color: rgba(255,255,255,.035);
+      white-space: nowrap;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      padding: 7px 12px;
+      border-radius: 999px;
+      color: #08111e;
+      background: var(--accent);
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: .05em;
+    }
+
+    h1 {
+      margin: 16px 0 8px;
+      font-size: clamp(32px, 6vw, 64px);
+      line-height: .98;
+      letter-spacing: -.04em;
+    }
+
+    .subtitle {
+      max-width: 760px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    .score-pill {
+      display: inline-flex;
+      margin-top: 18px;
+      padding: 9px 13px;
+      border: 1px solid rgba(69,215,255,.28);
+      border-radius: 12px;
+      color: var(--accent2);
+      background: rgba(69,215,255,.06);
+      font-weight: 600;
+    }
+
+    .section {
+      margin-top: 22px;
+      padding: 26px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(13,29,49,.86);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .part-label {
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      font-size: 13px;
+    }
+
+    h2 {
+      margin: 6px 0 4px;
+      font-size: clamp(23px, 3vw, 34px);
+    }
+
+    .helper {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .pain-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .pain-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #09192a;
+      overflow: hidden;
+      transition: .2s ease;
+    }
+
+    .pain-card.selected {
+      border-color: rgba(255,216,77,.65);
+      box-shadow: inset 0 0 0 1px rgba(255,216,77,.18);
+      transform: translateY(-1px);
+    }
+
+    .pain-pick {
+      width: 100%;
+      border: 0;
+      padding: 18px;
+      color: var(--text);
+      background: transparent;
+      text-align: left;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    .pain-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 19px;
+      font-weight: 700;
+    }
+
+    .status-dot {
+      width: 17px;
+      height: 17px;
+      border: 2px solid #63768c;
+      border-radius: 50%;
+      transition: .2s ease;
+    }
+
+    .pain-card.selected .status-dot {
+      border-color: var(--accent);
+      background: var(--accent);
+      box-shadow: inset 0 0 0 4px #09192a;
+    }
+
+    .pain-slider {
+      display: none;
+      padding: 0 18px 18px;
+    }
+
+    .pain-card.selected .pain-slider { display: block; }
+
+    .slider-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .pain-value {
+      color: var(--accent);
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+
+    .scale {
+      display: flex;
+      justify-content: space-between;
+      color: #6f8297;
+      font-size: 11px;
+    }
+
+    .question {
+      margin-top: 16px;
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #09192a;
+    }
+
+    .q-title {
+      margin: 0 0 14px;
+      font-size: 17px;
+      line-height: 1.65;
+      font-weight: 600;
+    }
+
+    .q-number {
+      display: inline-grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      margin-right: 7px;
+      border: 1px solid rgba(69,215,255,.35);
+      border-radius: 9px;
+      color: var(--accent2);
+      background: rgba(69,215,255,.06);
+      font-weight: 700;
+      vertical-align: middle;
+    }
+
+    .options {
+      display: grid;
+      gap: 9px;
+    }
+
+    .option {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 13px;
+      border: 1px solid rgba(255,255,255,.09);
+      border-radius: 12px;
+      background: rgba(255,255,255,.025);
+      cursor: pointer;
+      transition: .16s ease;
+    }
+
+    .option:hover {
+      border-color: rgba(69,215,255,.33);
+      background: rgba(69,215,255,.035);
+    }
+
+    .option input {
+      margin-top: 4px;
+      accent-color: var(--accent);
+    }
+
+    .image-options {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .image-options.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .image-choice {
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      overflow: hidden;
+      background: #06111f;
+    }
+
+    .image-choice img {
+      display: block;
+      width: 100%;
+      height: 220px;
+      object-fit: contain;
+      background: #071421;
+    }
+
+    .image-fallback {
+      display: none;
+      min-height: 220px;
+      padding: 18px;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: var(--muted);
+      border-bottom: 1px dashed var(--line);
+      line-height: 1.5;
+    }
+
+    .image-caption {
+      padding: 9px 12px;
+      color: #dbe5f0;
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .warning {
+      margin-top: 18px;
+      padding: 14px 15px;
+      border: 1px solid rgba(255,216,77,.23);
+      border-radius: 13px;
+      color: #d9c77e;
+      background: rgba(255,216,77,.05);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .submit-row {
+      position: sticky;
+      bottom: 14px;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-top: 22px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(5,15,27,.88);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 12px 34px rgba(0,0,0,.32);
+    }
+
+    .progress-text {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 13px;
+      padding: 13px 20px;
+      color: #06101d;
+      background: var(--accent);
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(255,216,77,.16);
+    }
+
+    .btn:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
+    .result {
+      display: none;
+      margin-top: 22px;
+      padding: 26px;
+      border: 1px solid rgba(98,230,167,.25);
+      border-radius: 22px;
+      background: linear-gradient(135deg, rgba(10,37,42,.92), rgba(9,25,42,.92));
+      box-shadow: var(--shadow);
+    }
+
+    .result.show { display: block; }
+
+    .score-board {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .score-circle {
+      display: grid;
+      place-items: center;
+      width: 132px;
+      aspect-ratio: 1;
+      border: 8px solid rgba(98,230,167,.22);
+      border-top-color: var(--good);
+      border-radius: 50%;
+      background: rgba(0,0,0,.12);
+    }
+
+    .score-big {
+      font-size: 38px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .score-small {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .answer-review {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 9px;
+      margin-top: 18px;
+    }
+
+    .review-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: rgba(255,255,255,.025);
+      font-size: 13px;
+    }
+
+    .review-item.correct strong { color: var(--good); }
+    .review-item.wrong strong { color: var(--bad); }
+
+    .save-status {
+      margin-top: 14px;
+      color: #b9c6d5;
+      font-size: 12px;
+    }
+
+    footer {
+      margin-top: 22px;
+      color: #75869a;
+      text-align: center;
+      font-size: 12px;
+    }
+
+    @media (max-width: 820px) {
+      .pain-grid { grid-template-columns: 1fr; }
+      .image-options,
+      .image-options.two { grid-template-columns: 1fr; }
+      .answer-review { grid-template-columns: 1fr; }
+      .score-board { grid-template-columns: 1fr; }
+      .hero, .section { padding: 20px; }
+      .submit-row { flex-direction: column; align-items: stretch; }
+      .btn { width: 100%; }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <span class="eyebrow">ERGO TRAINING CHALLENGE</span>
+      <h1>ErgoGameshow</h1>
+      <p class="subtitle">
+        แบบประเมินอาการปวด ณ ตอนนี้ และคำถามความรู้หลังการอบรมเรื่องการยศาสตร์
+        เมื่อกดส่ง ระบบจะแสดงคะแนนทันที และสามารถบันทึกผลไปยัง Google Sheet ได้
+      </p>
+      <div class="score-pill">PART 1: PAIN CHECK &nbsp; / &nbsp; PART 2: QUIZ 10 คะแนน</div>
+    </section>
+
+    <form id="ergoForm" novalidate>
+
+      <section class="section">
+        <div class="part-label">Part 1</div>
+        <h2>เลือกตำแหน่งที่ปวดตอนนี้</h2>
+        <div class="helper">เลือกได้มากกว่า 1 ตำแหน่ง แล้วระบุคะแนนความปวด 0–10</div>
+
+        <div class="pain-grid">
+          <article class="pain-card" data-pain="lower_back">
+            <button type="button" class="pain-pick" aria-pressed="false">
+              <div class="pain-title">
+                <span>หลังล่าง</span>
+                <span class="status-dot"></span>
+              </div>
+            </button>
+            <div class="pain-slider">
+              <div class="slider-head">
+                <span>คะแนนความปวด</span>
+                <span><b class="pain-value">5</b> / 10</span>
+              </div>
+              <input type="range" min="0" max="10" step="1" value="5" data-score="lower_back">
+              <div class="scale"><span>0 ไม่ปวด</span><span>10 ปวดมากที่สุด</span></div>
+            </div>
+          </article>
+
+          <article class="pain-card" data-pain="shoulder">
+            <button type="button" class="pain-pick" aria-pressed="false">
+              <div class="pain-title">
+                <span>หัวไหล่</span>
+                <span class="status-dot"></span>
+              </div>
+            </button>
+            <div class="pain-slider">
+              <div class="slider-head">
+                <span>คะแนนความปวด</span>
+                <span><b class="pain-value">5</b> / 10</span>
+              </div>
+              <input type="range" min="0" max="10" step="1" value="5" data-score="shoulder">
+              <div class="scale"><span>0 ไม่ปวด</span><span>10 ปวดมากที่สุด</span></div>
+            </div>
+          </article>
+
+          <article class="pain-card" data-pain="knee">
+            <button type="button" class="pain-pick" aria-pressed="false">
+              <div class="pain-title">
+                <span>หัวเข่า</span>
+                <span class="status-dot"></span>
+              </div>
+            </button>
+            <div class="pain-slider">
+              <div class="slider-head">
+                <span>คะแนนความปวด</span>
+                <span><b class="pain-value">5</b> / 10</span>
+              </div>
+              <input type="range" min="0" max="10" step="1" value="5" data-score="knee">
+              <div class="scale"><span>0 ไม่ปวด</span><span>10 ปวดมากที่สุด</span></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="part-label">Part 2</div>
+        <h2>คำถามความรู้เกี่ยวกับการอบรม</h2>
+        <div class="helper">ตอบให้ครบ 10 ข้อ แล้วกด “ส่งคำตอบและดูคะแนน”</div>
+
+        <div class="question">
+          <p class="q-title"><span class="q-number">1</span>
+            นาย A พนักงานในไลน์ประกอบ กินยาแก้ปวดชนิด NSAIDs เวลาที่ปวดกล้ามเนื้อตลอดเช้า กลางวัน เย็น
+            โดยกินมาทุกวันเป็นระยะเวลาสามเดือน นาย A เสี่ยงต่อภาวะใดบ้าง
+          </p>
+          <div class="options">
+            <label class="option"><input type="radio" name="q1" value="A"> ก. ไตวายแบบฉับพลัน</label>
+            <label class="option"><input type="radio" name="q1" value="B"> ข. กระเพาะทะลุ</label>
+            <label class="option"><input type="radio" name="q1" value="C"> ค. สุขภาพแข็งแรง</label>
+            <label class="option"><input type="radio" name="q1" value="D"> ง. ถูกทั้งข้อ ก และ ข</label>
+          </div>
+        </div>
+
+        <div class="question">
+          <p class="q-title"><span class="q-number">2</span>
+            ที่พยุงหลัง (Back support) ควรใส่แล้วปฏิบัติตัวอย่างไร
+          </p>
+          <div class="options">
+            <label class="option"><input type="radio" name="q2" value="A"> ก. ใส่แล้วไปวิ่ง</label>
+            <label class="option"><input type="radio" name="q2" value="B"> ข. ใส่มาทำงานยกของหนัก</label>
+            <label class="option"><input type="radio" name="q2" value="C"> ค. ใส่เพื่อที่จะให้กล้ามเนื้อได้พัก</label>
+            <label class="option"><input type="radio" name="q2" value="D"> ง. ใส่เอาไว้เท่ ๆ</label>
+          </div>
+        </div>
+
+        <div class="question">
+          <p class="q-title"><span class="q-number">3</span>
+            นายไข่ ปวดหลังมา 3 เดือน มีอาการชาลงเท้า ไฟช็อตร้าวลงเท้า บางวันตื่นขึ้นมากลางดึกเพราะอาการปวด
+            นายไข่ควรปฏิบัติตัวอย่างไร
+          </p>
+          <div class="options">
+            <label class="option"><input type="radio" name="q3" value="A"> ก. รีบไปพบแพทย์</label>
+            <label class="option"><input type="radio" name="q3" value="B"> ข. กลับไปยกของหนักเลย</label>
+            <label class="option"><input type="radio" name="q3" value="C"> ค. เบิกที่พยุงหลัง (Back support) มาใส่</label>
+            <label class="option"><input type="radio" name="q3" value="D"> ง. ไปเล่นพิลาทิส</label>
+          </div>
+        </div>
+
+        <div class="question">
+          <p class="q-title"><span class="q-number">4</span>ท่าทางในการย่อเพื่อทำงานท่าใดถูกต้อง</p>
+
+          <div class="image-options two">
+            <div class="image-choice">
+              <img src="assets/q4_1.jpg" alt="ภาพที่ 1"
+                   onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+              <div class="image-fallback">ใส่ภาพที่ 1 ที่<br><b>assets/q4_1.jpg</b></div>
+              <div class="image-caption">ภาพที่ 1</div>
+            </div>
+
+            <div class="image-choice">
+              <img src="assets/q4_2.jpg" alt="ภาพที่ 2"
+                   onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+              <div class="image-fallback">ใส่ภาพที่ 2 ที่<br><b>assets/q4_2.jpg</b></div>
+              <div class="image-caption">ภาพที่ 2</div>
+            </div>
+          </div>
+
+          <div class="options">
+            <label class="option"><input type="radio" name="q4" value="A"> ก. ภาพที่ 1</label>
+            <label class="option"><input type="radio" name="q4" value="B"> ข. ภาพที่ 2</label>
+          </div>
+        </div>
+
+        <div class="question">
+          <p class="q-title"><span class="q-number">5</span>
+            ปัจจัยใดต่อไปนี้กระตุ้นทำให้อาการปวดหลังจากการใช้งานมักจะเป็นหนักขึ้น
+          </p>
+          <div class="options">
+            <label class="option"><input type="radio" name="q5" value="A"> ก. การสูบบุหรี่</label>
+            <label class="option"><input type="radio" name="q5" value="B"> ข. น้ำหนักตัวที่เยอะ</label>
+            <label class="option"><input type="radio" name="q5" value="C"> ค. การทำงานบ้านที่ต้องยกของหนัก</label>
+            <label class="option"><input type="radio" name="q5" value="D"> ง. ถูกทุกข้อ</label>
+          </div>
+        </div>
+
+        <div class="question">
+          <p class="q-title"><span class="q-number">6</span>
+            เมื่ออาการปวดสงบลงแล้ว ควรทำสิ่งใดเพื่อทำให้กล้ามเนื้อแข็งแรงและทนต่อการปวดได้ดีขึ้น
+          </p>
+          <div class="options">
+            <label class="option"><input type="radio" name="q6" value="A"> ก. ออกกำลังกายในกล้ามเนื้อมัดที่เคยปวด</label>
+            <label class="option"><input type="radio" name="q6" value="B"> ข. ไปร้านนวดเพื่อกดจุด</label>
+            <label class="option"><input type="radio" name="q6" value="C"> ค. กลับไปทำงานได้ในทุกท่าแม้จะเป็นท่าที่ผิดก็ไม่เป็นไร</label>
+            <label class="option"><input type="radio" name="q6" value="D"> ง. ต้องรีบไปเล่น Hyrox</label>
+          </div>
+        </div>
+
+        <div class="question">
+          <p class="q-title"><span class="q-number">7</span>
+            ท่าที่แสดงในภาพเป็นการออกกำลังกายกล้ามเนื้อมัดใด
+          </p>
+
+          <div class="image-options">
+            <div class="image-choice" style="grid-column:1/-1">
+              <img src="assets/q7.jpg" alt="ภาพประกอบข้อ 7"
+                   onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+              <div class="image-fallback">ใส่ภาพข้อ 7 ที่<br><b>assets/q7.jpg</b></div>
+              <div class="image-caption">ภาพประกอบคำถามข้อ 7</div>
+            </div>
+          </div>
+
+          <div class="options">
+            <label class="option"><input type="radio" name="q7" value="A"> ก. กล้ามเนื้อรอบเข่า</label>
+            <label class="option"><input type="radio" name="q7" value="B"> ข. กล้ามเนื้อรอบเอว</label>
+            <label class="option"><input type="radio" name="q7" value="C"> ค. กล้ามเนื้อข้อมือ</label>
+            <label class="option"><input type="radio" name="q7" value="D"> ง. กล้ามเนื้อหัวไหล่</label>
+          </div>
+        </div>
+
+        <div class="question">
+          <p class="q-title"><span class="q-number">8</span>
+            ท่าใดต่อไปนี้แสดงการทำงานของงานที่ต้องใช้แขนอยู่เหนือศีรษะได้ดีที่สุด
+          </p>
+
+          <div class="image-options">
+            <div class="image-choice">
+              <img src="assets/q8_1.jpg" alt="ภาพที่ 1"
+                   onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+              <div class="image-fallback">ใส่ภาพที่<br><b>assets/q8_1.jpg</b></div>
+              <div class="image-caption">ภาพที่ 1</div>
+            </div>
+
+            <div class="image-choice">
+              <img src="assets/q8_2.jpg" alt="ภาพที่ 2"
+                   onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+              <div class="image-fallback">ใส่ภาพที่<br><b>assets/q8_2.jpg</b></div>
+              <div class="image-caption">ภาพที่ 2</div>
+            </div>
+
+            <div class="image-choice">
+              <img src="assets/q8_3.jpg" alt="ภาพที่ 3"
+                   onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+              <div class="image-fallback">ใส่ภาพที่<br><b>assets/q8_3.jpg</b></div>
+              <div class="image-caption">ภาพที่ 3</div>
+            </div>
+          </div>
+
+          <div class="options">
+            <label class="option"><input type="radio" name="q8" value="A"> ก. ภาพที่ 1</label>
+            <label class="option"><input type="radio" name="q8" value="B"> ข. ภาพที่ 2</label>
+            <label class="option"><input type="radio" name="q8" value="C"> ค. ภาพที่ 3</label>
+          </div>
+        </div>
+
+        <div class="question">
+          <p class="q-title"><span class="q-number">9</span>
+            ถ้าป่วยเป็นโรคทางกระดูกและกล้ามเนื้อไประยะเวลานาน ๆ สุดท้ายแล้วจะเกิดโรคอะไรขึ้นได้บ้าง
+          </p>
+          <div class="options">
+            <label class="option"><input type="radio" name="q9" value="A"> ก. กระดูกเสื่อมทับเส้น ทำให้เป็นอัมพาต</label>
+            <label class="option"><input type="radio" name="q9" value="B"> ข. หมอนรองกระดูกทับเส้น ทำให้เป็นอัมพาต</label>
+            <label class="option"><input type="radio" name="q9" value="C"> ค. กล้ามเนื้ออักเสบเรื้อรัง</label>
+            <label class="option"><input type="radio" name="q9" value="D"> ง. ถูกทุกข้อ</label>
+          </div>
+        </div>
+
+        <div class="question">
+          <p class="q-title"><span class="q-number">10</span>
+            การรักษาไม่ว่าจะเป็นการกินยา การทำกายภาพ การฝังเข็มเป็นการรักษาที่ปลายเหตุ
+            แล้วถ้าจะรักษาที่ต้นเหตุของโรคกลุ่มนี้ต้องทำอย่างไร
+          </p>
+          <div class="options">
+            <label class="option"><input type="radio" name="q10" value="A"> ก. ใช้ท่าทางและปรับหน้างานให้เหมาะสมกับหลักทางการแพทย์</label>
+            <label class="option"><input type="radio" name="q10" value="B"> ข. กินยาแก้ปวดไปเรื่อย ๆ จนกว่าจะหาย</label>
+            <label class="option"><input type="radio" name="q10" value="C"> ค. เบิกที่พยุงหลังมาใช้ใส่เวลาทำงาน</label>
+            <label class="option"><input type="radio" name="q10" value="D"> ง. ถ้าปวดมาก ๆ ก็ไม่ยอมหยุดพักหรือไม่พบแพทย์</label>
+          </div>
+        </div>
+
+        <div class="warning">
+          แบบทดสอบนี้ใช้เพื่อการอบรม ไม่ใช่เครื่องมือวินิจฉัยโรค
+        </div>
+
+        <div class="submit-row">
+          <div class="progress-text" id="progressText">ตอบแล้ว 0 / 10 ข้อ</div>
+          <button class="btn" id="submitBtn" type="submit">ส่งคำตอบและดูคะแนน</button>
+        </div>
+      </section>
+    </form>
+
+    <section class="result" id="resultBox" aria-live="polite">
+      <div class="score-board">
+        <div class="score-circle">
+          <div>
+            <div class="score-big" id="scoreText">0/10</div>
+            <div class="score-small" id="percentText">0%</div>
+          </div>
+        </div>
+        <div>
+          <h3 id="resultTitle">ผลคะแนน</h3>
+          <p id="resultMessage"></p>
+        </div>
+      </div>
+
+      <div class="answer-review" id="answerReview"></div>
+      <div class="save-status" id="saveStatus"></div>
+    </section>
+
+    <footer>ErgoGameshow • Ergonomics Training Quiz</footer>
+  </main>
+
+  <script>
+    // ============================================================
+    // หลัง Deploy Google Apps Script แล้ว
+    // ให้นำ Web App URL มาใส่ตรงนี้
+    // ============================================================
+    const WEB_APP_URL = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
+
+    const ANSWER_KEY = {
+      q1: "D",
+      q2: "C",
+      q3: "A",
+      q4: "A",
+      q5: "D",
+      q6: "A",
+      q7: "A",
+      q8: "A",
+      q9: "D",
+      q10: "A"
+    };
+
+    const painState = {
+      lower_back: { selected: false, score: 0 },
+      shoulder: { selected: false, score: 0 },
+      knee: { selected: false, score: 0 }
+    };
+
+    // ===========================
+    // PART 1
+    // ===========================
+    document.querySelectorAll(".pain-card").forEach(card => {
+      const key = card.dataset.pain;
+      const button = card.querySelector(".pain-pick");
+      const slider = card.querySelector('input[type="range"]');
+      const valueEl = card.querySelector(".pain-value");
+
+      button.addEventListener("click", () => {
+        painState[key].selected = !painState[key].selected;
+
+        card.classList.toggle("selected", painState[key].selected);
+        button.setAttribute(
+          "aria-pressed",
+          painState[key].selected ? "true" : "false"
+        );
+
+        if (painState[key].selected) {
+          painState[key].score = Number(slider.value);
+        } else {
+          painState[key].score = 0;
+        }
+      });
+
+      slider.addEventListener("input", () => {
+        valueEl.textContent = slider.value;
+
+        if (painState[key].selected) {
+          painState[key].score = Number(slider.value);
+        }
+      });
+    });
+
+    // ===========================
+    // QUIZ PROGRESS
+    // ===========================
+    function updateProgress() {
+      let answered = 0;
+
+      Object.keys(ANSWER_KEY).forEach(q => {
+        if (document.querySelector(`input[name="${q}"]:checked`)) {
+          answered++;
+        }
+      });
+
+      document.getElementById("progressText").textContent =
+        `ตอบแล้ว ${answered} / 10 ข้อ`;
+    }
+
+    document.querySelectorAll('input[type="radio"]').forEach(el => {
+      el.addEventListener("change", updateProgress);
+    });
+
+    function getSelectedAnswer(questionName) {
+      const el =
+        document.querySelector(`input[name="${questionName}"]:checked`);
+
+      return el ? el.value : "";
+    }
+
+    function validateQuiz() {
+      const missing = [];
+
+      Object.keys(ANSWER_KEY).forEach(q => {
+        if (!getSelectedAnswer(q)) {
+          missing.push(q.replace("q", ""));
+        }
+      });
+
+      if (missing.length > 0) {
+        alert(
+          `กรุณาตอบคำถามให้ครบ 10 ข้อ\nยังไม่ได้ตอบข้อ: ${missing.join(", ")}`
+        );
+
+        const firstMissing =
+          document.querySelector(`input[name="q${missing[0]}"]`);
+
+        firstMissing
+          ?.closest(".question")
+          ?.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+          });
+
+        return false;
+      }
+
+      return true;
+    }
+
+    function calculateResult() {
+      let score = 0;
+      const answers = {};
+      const correctness = {};
+
+      Object.keys(ANSWER_KEY).forEach(q => {
+        const answer = getSelectedAnswer(q);
+        const isCorrect = answer === ANSWER_KEY[q];
+
+        answers[q] = answer;
+        correctness[q] = isCorrect;
+
+        if (isCorrect) score++;
+      });
+
+      return {
+        score,
+        percent: Math.round((score / 10) * 100),
+        answers,
+        correctness
+      };
+    }
+
+    function showResult(result) {
+      const resultBox = document.getElementById("resultBox");
+      const review = document.getElementById("answerReview");
+
+      document.getElementById("scoreText").textContent =
+        `${result.score}/10`;
+
+      document.getElementById("percentText").textContent =
+        `${result.percent}%`;
+
+      let title = "ทำได้ดี";
+      let message =
+        "ลองทบทวนข้อที่ยังตอบไม่ถูก แล้วนำหลักการไปใช้กับหน้างานจริง";
+
+      if (result.score >= 9) {
+        title = "ยอดเยี่ยม";
+        message =
+          "คุณทำคะแนนได้ดีมาก และเข้าใจสาระสำคัญของการอบรม";
+      } else if (result.score >= 7) {
+        title = "ผ่านแบบสวย ๆ";
+        message =
+          "เข้าใจเนื้อหาหลักได้ดี เหลือทบทวนอีกเล็กน้อย";
+      } else if (result.score >= 5) {
+        title = "เกือบเต็มพลัง";
+        message =
+          "มีพื้นฐานแล้ว ลองทบทวนหัวข้อที่ตอบผิดอีกครั้ง";
+      } else {
+        title = "ลองทบทวนอีกนิด";
+        message =
+          "แนะนำกลับไปดูเนื้อหาสำคัญเรื่อง red flags การออกกำลังกาย และการปรับหน้างาน";
+      }
+
+      document.getElementById("resultTitle").textContent = title;
+      document.getElementById("resultMessage").textContent = message;
+
+      review.innerHTML = "";
+
+      Object.keys(ANSWER_KEY).forEach(q => {
+        const n = q.replace("q", "");
+        const ok = result.correctness[q];
+
+        const div = document.createElement("div");
+        div.className = `review-item ${ok ? "correct" : "wrong"}`;
+
+        div.innerHTML = `
+          <span>ข้อ ${n}: ตอบ ${result.answers[q]}</span>
+          <strong>
+            ${ok ? "ถูก" : `ผิด · เฉลย ${ANSWER_KEY[q]}`}
+          </strong>
+        `;
+
+        review.appendChild(div);
+      });
+
+      resultBox.classList.add("show");
+
+      resultBox.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+
+    // ===========================
+    // BUILD DATA FOR GOOGLE SHEET
+    // ===========================
+    function buildPayload(result) {
+      const payload = {
+        client_submitted_at: new Date().toISOString(),
+
+        pain_lower_back_selected:
+          painState.lower_back.selected,
+        pain_lower_back_score:
+          painState.lower_back.score,
+
+        pain_shoulder_selected:
+          painState.shoulder.selected,
+        pain_shoulder_score:
+          painState.shoulder.score,
+
+        pain_knee_selected:
+          painState.knee.selected,
+        pain_knee_score:
+          painState.knee.score,
+
+        correct_count:
+          result.score,
+
+        score_percent:
+          result.percent,
+
+        page_url:
+          location.href,
+
+        user_agent:
+          navigator.userAgent
+      };
+
+      for (let i = 1; i <= 10; i++) {
+        payload[`q${i}_answer`] =
+          result.answers[`q${i}`];
+
+        payload[`q${i}_correct`] =
+          result.correctness[`q${i}`];
+      }
+
+      return payload;
+    }
+
+    // ===========================
+    // SEND TO GOOGLE SHEET
+    // ===========================
+    async function saveToGoogleSheet(payload) {
+      const saveStatus =
+        document.getElementById("saveStatus");
+
+      if (
+        !WEB_APP_URL ||
+        WEB_APP_URL.includes("PASTE_YOUR_")
+      ) {
+        saveStatus.textContent =
+          "ยังไม่ได้ตั้งค่า Google Apps Script URL — คะแนนแสดงได้ แต่ข้อมูลยังไม่ถูกส่งเข้า Google Sheet";
+
+        return;
+      }
+
+      saveStatus.textContent =
+        "กำลังส่งข้อมูลไปยัง Google Sheet...";
+
+      try {
+        await fetch(WEB_APP_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: {
+            "Content-Type":
+              "text/plain;charset=utf-8"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        saveStatus.textContent =
+          "ส่งข้อมูลไปยัง Google Sheet แล้ว";
+
+      } catch (error) {
+        console.error(error);
+
+        saveStatus.textContent =
+          "ส่งข้อมูลไม่สำเร็จ กรุณาตรวจ Web App URL หรือ Deployment ของ Google Apps Script";
+      }
+    }
+
+    // ===========================
+    // SUBMIT
+    // ===========================
+    document
+      .getElementById("ergoForm")
+      .addEventListener(
+        "submit",
+        async event => {
+
+          event.preventDefault();
+
+          if (!validateQuiz()) return;
+
+          const submitBtn =
+            document.getElementById("submitBtn");
+
+          submitBtn.disabled = true;
+
+          const result =
+            calculateResult();
+
+          showResult(result);
+
+          const payload =
+            buildPayload(result);
+
+          await saveToGoogleSheet(payload);
+
+          submitBtn.disabled = false;
+        }
+      );
+
+    updateProgress();
+  </script>
+</body>
+</html>
